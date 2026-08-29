@@ -62,7 +62,8 @@
 
   "//": "Clock",
   "RUN_CTS": 1,
-  "CTS_DISABLE_POST_PROCESSING": true,
+  "PL_MAX_DISPLACEMENT_X": 1000,
+  "PL_MAX_DISPLACEMENT_Y": 200,
 
   "//": "Don't generate power rings",
   "FP_PDN_MULTILAYER": 0,
