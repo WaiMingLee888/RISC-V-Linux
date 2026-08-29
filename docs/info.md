@@ -1,6 +1,9 @@
 ## How it works
 
-32-bit RISC-V IMA processor, capable of booting Linux. Features 16 MiB of external SPI flash memory, 16 MiB of external PSRAM (8 MiB per bank), a UART peripheral, and a SPI peripheral.
+This is Wai Ming Lee's current-SKY130 port of Hirosh Dabui's silicon-proven
+32-bit KianV RISC-V IMA processor, capable of booting Linux. It features 16 MiB
+of external SPI flash memory, 16 MiB of external PSRAM (8 MiB per bank), a UART
+peripheral, and an SPI peripheral.
 
 ## System Memory Map
 

@@ -1,41 +1,60 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg)
+# KianV RV32IMA Linux SoC for Tiny Tapeout SKY130
 
-# Tiny Tapeout Verilog Project Template
+This repository ports Hirosh Dabui's silicon-proven KianV RV32IMA uLinux SoC
+to Wai Ming Lee's current TTSKY26c project. It is the Linux-capable companion
+to the much smaller NanoV bare-metal project.
 
-- [Read the documentation for project](docs/info.md)
+KianV executes RV32IMA code and contains the CSR/exception, CLINT timer,
+external-memory, UART, SPI, and GPIO logic used by its uLinux system. The ASIC
+boots from a QSPI flash and uses two external QSPI PSRAM devices. The required
+memory hardware is available as the Tiny Tapeout QSPI Pmod.
 
-## What is Tiny Tapeout?
+## Honest size and cost boundary
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital designs manufactured on a real chip.
+Linux support does not fit the approximately USD-100 NanoV footprint. This
+design declares an `8x2` footprint: 16 billable digital tiles. At the current
+public price of EUR 70 per tile, silicon space is EUR 1,120; the demoboard,
+QSPI Pmod, taxes, and shipping are additional.
 
-To learn more and get started, visit https://tinytapeout.com.
+The generated current-template die area is `1378.16 x 225.76` micrometres.
 
-## Verilog Projects
+## Boot memory map
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Optionally, add a testbench to the `test` folder. See [test/README.md](test/README.md) for more information.
+| Address / flash offset | Contents |
+| --- | --- |
+| CPU `0x20100000`, flash offset `0x100000` | Bootloader |
+| Flash offset `0x180000` | Device tree (`kianv.dtb`) |
+| Flash offset `0x200000` | Linux kernel plus root filesystem (`Image`) |
+| CPU `0x80000000` | 16 MiB external PSRAM |
 
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
+The upstream system-image build is maintained in
+[`kianRiscV/asic/os/ulinux_asic_kianv_soc`](https://github.com/splinedrive/kianRiscV/tree/master/asic/os/ulinux_asic_kianv_soc).
 
-## Enable GitHub actions to build the results page
+## Verification
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+Run the included firmware regression:
 
-## Resources
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r test/requirements.txt
+cd test
+make clean all
+! grep failure results.xml
+```
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://docs.google.com/document/d/1aUUZ1jthRpg4QURIIyzlOaPWlmQzr-jBn3wZipVUPt4)
+The regression boots from a simulated QSPI flash and checks the UART banner
+and echo, the independent SPI peripheral, and GPIO sequencing. A passing RTL
+test is only the first gate. Submission readiness additionally requires the
+official TTSKY26c hardening, extracted-netlist gate-level test, setup and hold
+timing, detailed-routing and Magic DRC, LVS, antenna, and precheck jobs to pass
+on the exact proposed commit.
 
-## What next?
+## Provenance
 
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@matthewvenn](https://twitter.com/matthewvenn)
+- Port baseline: [`splinedrive/KianV-RV32IMA-RISC-V-uLinux-SoC`](https://github.com/splinedrive/KianV-RV32IMA-RISC-V-uLinux-SoC)
+- CPU/system source: [`splinedrive/kianRiscV`](https://github.com/splinedrive/kianRiscV)
+- Tiny Tapeout silicon-proven project: [KianV uLinux SoC](https://tinytapeout.com/chips/ttgf0p2/tt_um_kianV_rv32ima_uLinux_SoC)
+
+The original source and this port are licensed under the MIT License; retain
+the copyright and attribution notices in [`LICENSE`](LICENSE).

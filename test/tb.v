@@ -39,7 +39,7 @@ module tb ();
 
   wire [7:0] ui_in = {4'b0, uart_rx, spi_sio1_so_miso0, 1'b0, test_sel};
 
-  tt_um_kianV_rv32ima_uLinux_SoC tt_um_kianV_rv32ima_uLinux_SoC_I (
+  tt_um_WaiMingLee888_kianv_linux tt_um_WaiMingLee888_kianv_linux_I (
       // include power ports for the Gate Level test
 `ifdef GL_TEST
       .VPWR(VPWR),
